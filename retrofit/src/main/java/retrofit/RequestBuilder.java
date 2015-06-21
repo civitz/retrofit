@@ -32,7 +32,7 @@ import retrofit.client.Request;
 import retrofit.converter.Converter;
 import retrofit.http.Body;
 import retrofit.http.Cookie;
-import retrofit.http.Cookies;
+import retrofit.http.CookieMap;
 import retrofit.http.EncodedPath;
 import retrofit.http.EncodedQuery;
 import retrofit.http.EncodedQueryMap;
@@ -106,16 +106,16 @@ final class RequestBuilder implements RequestInterceptor.RequestFacade {
         throw new IllegalArgumentException("Unknown request type: " + methodInfo.requestType);
     }
   }
-  
+
   private static final String COOKIE_HEADER = "Cookie";
-  
+
   @Override public void addCookie(String name, String value) {
     if (name == null) {
       throw new IllegalArgumentException("Cookie name must not be null.");
     }
     StringBuilder newCookie = new StringBuilder(name).append("=");
     if (value != null) {
-    	newCookie.append(value);
+      newCookie.append(value);
     }
     List<Header> headers = this.headers;
     if (headers == null) {
@@ -126,12 +126,12 @@ final class RequestBuilder implements RequestInterceptor.RequestFacade {
     while (headersIterator.hasNext()) {
       final Header header = headersIterator.next();
       if (header != null && COOKIE_HEADER.equalsIgnoreCase(header.getName())) {
-      	// Append to existing header
-      	StringBuilder cookies = new StringBuilder(header.getValue());
-      	cookies.append("; ").append(newCookie);
-      	headers.set(headersIterator.previousIndex(), new Header(COOKIE_HEADER, cookies.toString()));
-      	cookieHeaderPresent = true;
-      	break;
+        // Append to existing header
+        StringBuilder cookies = new StringBuilder(header.getValue());
+        cookies.append("; ").append(newCookie);
+        headers.set(headersIterator.previousIndex(), new Header(COOKIE_HEADER, cookies.toString()));
+        cookieHeaderPresent = true;
+        break;
       }
     }
     if (!cookieHeaderPresent) {
@@ -412,10 +412,10 @@ final class RequestBuilder implements RequestInterceptor.RequestFacade {
         }
       } else if (annotationType == Cookie.class) {
         if (value != null) { // Skip null values.
-            String name = ((retrofit.http.Cookie) annotation).name();
+            String name = ((retrofit.http.Cookie) annotation).value();
             addCookie(name, value.toString());
         }
-      } else if (annotationType == Cookies.class) {
+      } else if (annotationType == CookieMap.class) {
         if (value != null) { // Skip null values.
           for (Map.Entry<?, ?> entry : ((Map<?, ?>) value).entrySet()) {
             Object entryKey = entry.getKey();
